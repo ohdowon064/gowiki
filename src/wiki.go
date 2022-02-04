@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 type Page struct {
 	Title string
@@ -9,6 +12,7 @@ type Page struct {
 
 func (p *Page) save() error {
 	/*
+		- Page 구조체 메서드로 선언.
 		- save 메소드는 텍스트파일에 페이지의 Body를 저장한다.
 		- Title을 파일 이름으로 사용한다.
 		- WriteFile을 리턴한다. -> 추후 에러발생시 핸들링을 위해서 에러값이 반환된다.
@@ -47,4 +51,12 @@ func loadPage(title string) (*Page, error) {
 		return nil, err
 	}
 	return &Page{Title: title, Body: body}, nil
+}
+
+func main() {
+	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page.")}
+	p1.save() // TestPage.txt 파일이 저장된다.
+
+	p2, _ := loadPage("TestPage") // p2 구조체로 파일내용이 읽어진다.
+	fmt.Println(string(p2.Body))
 }
