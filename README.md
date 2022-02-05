@@ -1,9 +1,8 @@
 ## Go Wep Application
-```
 This is a simple Go Wep Application developed by referring to the official Go documentation. A bulletin board service was developed using Go.
 
 All comments and explanations were prepared by translating the contents of the official document. There may be mistranslations or typos.
-```
+
 [-> Official Go Documentation Link](https://go.dev/doc/articles/wiki/)
 
 ## Go Wiki
