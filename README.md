@@ -5,7 +5,7 @@ All comments and explanations were prepared by translating the contents of the o
 
 [-> Official Go Documentation Link](https://go.dev/doc/articles/wiki/)
 
-## Go Wiki
+## Go Wiki Contents
 ```
 1. 메서드 전달 및 저장을 위한 data structure
 2. net/http 패키지 사용하여 웹어플리케이션 구축
