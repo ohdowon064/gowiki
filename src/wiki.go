@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 )
 
@@ -53,10 +55,23 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
-func main() {
-	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page.")}
-	p1.save() // TestPage.txt 파일이 저장된다.
+func handler(w http.ResponseWriter, r *http.Request) {
+	/*
+		- http.ResponseWriter: HTTP 서버의 응답을 수집한다.
+		- http.Request: client HTTP 요청을 나타낸다.
+		- r.URL.Path[1:]: 요청 URL의 Path 요소, root url "/"의 다음부터 슬라이싱
+			- 예를 들어, http://localhost:8080/monkeys에 요청하면
+			- Hi, there, I love monkeys!를 반환
+	*/
+	fmt.Fprintf(w, "Hi, there, I love %s!", r.URL.Path[1:])
+}
 
-	p2, _ := loadPage("TestPage") // p2 구조체로 파일내용이 읽어진다.
-	fmt.Println(string(p2.Body))
+func main() {
+	/*
+		log.Fatal로 http.ListenAndServe를 넘기는 이유
+		- ListenAndServe는 에러발생 시 항상 에러를 반환한다.
+		- 따라서 해당 에러를 기록하기 위해서 log.Fatal 사용
+	*/
+	http.HandleFunc("/", handler)                // web root url "/"로 들어오는 모든 요청에 대해 hanlder로 처리하도록 http 패키지에 지시한다.
+	log.Fatal(http.ListenAndServe(":8080", nil)) // 8080포트에서 listen(요청대기), 프로그램이 종료될 때가지 블록된다.
 }
