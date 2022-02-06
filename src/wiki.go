@@ -57,11 +57,14 @@ func loadPage(title string) (*Page, error) {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	/*
-		- http.ResponseWriter: HTTP 서버의 응답을 수집한다.
+		- http.ResponseWriter: HTTP 서버의 응답을 수집한다. 해당 응답에 무언가를 쓰기위해서 파라미터로 받음
 		- http.Request: client HTTP 요청을 나타낸다.
 		- r.URL.Path[1:]: 요청 URL의 Path 요소, root url "/"의 다음부터 슬라이싱
 			- 예를 들어, http://localhost:8080/monkeys에 요청하면
 			- Hi, there, I love monkeys!를 반환
+
+		- fmt에서 print앞에 F가 붙으면 파일 입출력을 뜻한다.
+		- w 즉, http.ResponseWriter에 문자열을 입력한다는 뜻이다.
 	*/
 	fmt.Fprintf(w, "Hi, there, I love %s!", r.URL.Path[1:])
 }
