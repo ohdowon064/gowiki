@@ -80,13 +80,28 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 }
 
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/edit/"):]
+	p, err := loadPage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
+	fmt.Fprintf(w, "<h1>Editing %s</h1>"+
+		"<form action=\"/save/%s\" method=\"POST\">"+
+		"<textarea name=\"body\">%s</textarea><br>"+
+		"<input type=\"submit\" value=\"save\">"+
+		"</form>",
+		p.Title, p.Title, p.Body)
+}
+
 func main() {
 	/*
 		log.Fatal로 http.ListenAndServe를 넘기는 이유
 		- ListenAndServe는 에러발생 시 항상 에러를 반환한다.
 		- 따라서 해당 에러를 기록하기 위해서 log.Fatal 사용
 	*/
-	http.HandleFunc("/", handler)                // web root url "/"로 들어오는 모든 요청에 대해 hanlder로 처리하도록 http 패키지에 지시한다.
-	http.HandleFunc("/view/", viewHandler)       // "/view/"로 오는 요청을 처리한다.
+	http.HandleFunc("/", handler)          // web root url "/"로 들어오는 모든 요청에 대해 hanlder로 처리하도록 http 패키지에 지시한다.
+	http.HandleFunc("/view/", viewHandler) // "/view/"로 오는 요청을 처리한다.
+	http.HandleFunc("/edit/", editHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil)) // 8080포트에서 listen(요청대기), 프로그램이 종료될 때가지 블록된다.
 }
