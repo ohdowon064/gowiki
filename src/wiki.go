@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -70,28 +71,30 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
-	/*
-		- _는 loadPage에서 오는 에러값을 무시한다는 뜻
-		- /view/ 이후의 값을 슬라이싱해서 페이지 제목을 파싱
-		- 해당 파일의 제목과 내용을 응답으로 반환
-	*/
 	title := r.URL.Path[len("/view/"):]
 	p, _ := loadPage(title)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+	t, _ := template.ParseFiles("view.html")
+	t.Execute(w, p)
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
+	/*
+		- template(템플릿): 재사용 가능한 양식
+		- template.ParseFiles: edit.html를 읽고 *template.Template을 반환한다.
+		- t.Execute: 템플릿을 실행시킨다. -> 생성된 HTML을 http.ResponseWriter (w변수)에 작성한다.
+		- edit.html에서 .Title, .Body 식별자들은 p.Title, p.Body에 대응된다.
+		- {{ printf "%s" .Body }}: 함수호출의 결과값(bytes stream이 아닌 string으로)이 된다.
+
+		- html/template 패키지는 only safe and correct-looking HTML만으로 template action에 의해 생성되는 것을 보장한다.
+		- 사용자가 입력한 <> 태그사인을 자동으로 부등호로 이스케이프해준다.
+	*/
 	title := r.URL.Path[len("/edit/"):]
 	p, err := loadPage(title)
 	if err != nil {
 		p = &Page{Title: title}
 	}
-	fmt.Fprintf(w, "<h1>Editing %s</h1>"+
-		"<form action=\"/save/%s\" method=\"POST\">"+
-		"<textarea name=\"body\">%s</textarea><br>"+
-		"<input type=\"submit\" value=\"save\">"+
-		"</form>",
-		p.Title, p.Title, p.Body)
+	t, _ := template.ParseFiles("edit.html")
+	t.Execute(w, p)
 }
 
 func main() {
