@@ -66,7 +66,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		- fmt에서 print앞에 F가 붙으면 파일 입출력을 뜻한다.
 		- w 즉, http.ResponseWriter에 문자열을 입력한다는 뜻이다.
 	*/
-	fmt.Fprintf(w, "Hi, there, I love %s!", r.URL.Path[1:])
+	fmt.Fprintf(w, "Hi, there, I love %s!", r.URL.Path[1:]) // w.Write([]byte("Hi~"))
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	/*
+		- _는 loadPage에서 오는 에러값을 무시한다는 뜻
+		- /view/ 이후의 값을 슬라이싱해서 페이지 제목을 파싱
+		- 해당 파일의 제목과 내용을 응답으로 반환
+	*/
+	title := r.URL.Path[len("/view/"):]
+	p, _ := loadPage(title)
+	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 }
 
 func main() {
@@ -76,5 +87,6 @@ func main() {
 		- 따라서 해당 에러를 기록하기 위해서 log.Fatal 사용
 	*/
 	http.HandleFunc("/", handler)                // web root url "/"로 들어오는 모든 요청에 대해 hanlder로 처리하도록 http 패키지에 지시한다.
+	http.HandleFunc("/view/", viewHandler)       // "/view/"로 오는 요청을 처리한다.
 	log.Fatal(http.ListenAndServe(":8080", nil)) // 8080포트에서 listen(요청대기), 프로그램이 종료될 때가지 블록된다.
 }
